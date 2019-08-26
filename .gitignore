@@ -1,0 +1,11 @@
+venv
+*__pycache__
+*.pyc
+.idea
+*.sqlite3
+*.csv
+*.xlsx
+indosat_b2b/setting_components/*
+!indosat_b2b/setting_components/base.py
+credentials/
+staticfiles
