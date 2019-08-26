@@ -1,7 +1,9 @@
 import os
 
-
 from split_settings.tools import include
+
+from dotenv import load_dotenv
+load_dotenv()
 
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'local')
 include(

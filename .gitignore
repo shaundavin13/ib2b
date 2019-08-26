@@ -9,3 +9,4 @@ indosat_b2b/setting_components/*
 !indosat_b2b/setting_components/base.py
 credentials/
 staticfiles
+.env
