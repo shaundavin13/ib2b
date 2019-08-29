@@ -14,7 +14,7 @@ class User(AbstractUser):
     level = models.IntegerField()
 
     def get_subordinates(self):
-        return getattr(self, f'subordinates_{self.level}')
+        return getattr(self, f'subordinates_{self.level}').all() if self.level > 1 else []
 
     level_2_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_2', null=True)
     level_3_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_3', null=True)
