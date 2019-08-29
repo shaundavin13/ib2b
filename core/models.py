@@ -11,9 +11,13 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     username = None
+    level = models.IntegerField()
 
-    level_2_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING)
-    level_3_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING)
-    level_4_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING)
-    level_5_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING)
-    level_6_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING)
+    def get_subordinates(self):
+        return getattr(self, f'subordinates_{self.level}')
+
+    level_2_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_2', null=True)
+    level_3_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_3', null=True)
+    level_4_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_4', null=True)
+    level_5_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_5', null=True)
+    level_6_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_6', null=True)
