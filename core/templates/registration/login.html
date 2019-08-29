@@ -1,0 +1,37 @@
+{% extends '__base.html' %}
+
+{% block body %}
+    <div class="ui middle aligned centered grid" id="index-container">
+        <div class="ui four column row">
+            <div class="ui column">
+
+                <img src="/static/images/logo.png" alt="logo" class="ui medium centered image">
+                <h3 class="ui centered header">Sales Enablement Tool</h3>
+                <h1 class="ui centered header">Links Dashboard</h1>
+                {% if form.non_field_errors %}
+                    <ul>
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+
+                <form class="ui form" method="post" action="{% url 'core:login' %}" name="login-form">
+                    <div class="field">
+                        {{ form.username.errors }}
+                        <label for="username">Email</label>
+                        <input type="text" name="username" placeholder="Email">
+                    </div>
+                    <div class="field">
+                        {{ form.password.errors }}
+                        <label for="password">Password</label>
+                        <input type="password" name="password" placeholder="Password">
+                    </div>
+                    {% csrf_token %}
+                    <button class="ui red large button" type="submit">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

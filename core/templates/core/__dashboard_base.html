@@ -1,0 +1,28 @@
+{% extends '__base.html' %}
+{% load static %}
+
+{% block title %}
+    {{ app_name }} | Home
+{% endblock %}
+
+{% block body %}
+    {% block header %}
+        <header>
+            <div class="ui menu">
+                <div class="ui item">
+                    <a href="/" class="ui tiny image">
+                        <img src="{% static 'images/logo.png' %}" alt="">
+                    </a>
+                </div>
+                <div class="right menu">
+                    <div class="item">{{ request.user.first_name }}</div>
+                    <div class="item">Settings</div>
+                    <a href="{% url 'core:logout' %}" class="item">Logout</a>
+                </div>
+            </div>
+        </header>
+    {% endblock %}
+    {% block content %}
+
+    {% endblock %}
+{% endblock %}

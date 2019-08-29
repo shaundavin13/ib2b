@@ -1,0 +1,1 @@
+node-sass --output-style compressed static/css/style.sass > static/css/style.css

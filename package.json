@@ -1,0 +1,10 @@
+{
+  "name": "indosat_b2b",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "shaun <shaundavin13@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "node-sass": "^4.12.0"
+  }
+}

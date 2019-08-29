@@ -11,3 +11,4 @@ credentials/
 staticfiles
 .env
 Semantic-UI-CSS-master
+node_modules
