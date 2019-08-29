@@ -119,9 +119,11 @@ STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'core.User'
 
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
+LOGIN_URL = 'core:login'
 LOGIN_REDIRECT_URL = 'core:dashboard'
 LOGOUT_REDIRECT_URL = 'core:index'

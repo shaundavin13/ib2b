@@ -15,7 +15,7 @@
                     </a>
                 </div>
                 <div class="right menu">
-                    <div class="item">{{ request.user.first_name }}</div>
+                    <div class="item">{{ request.user.email }}</div>
                     <div class="item">Settings</div>
                     <a href="{% url 'core:logout' %}" class="item">Logout</a>
                 </div>

@@ -11,3 +11,9 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     username = None
+
+    level_2_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING)
+    level_3_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING)
+    level_4_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING)
+    level_5_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING)
+    level_6_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING)
