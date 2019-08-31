@@ -1,0 +1,20 @@
+<div class="search-filter">
+    <form action="" class="ui form" method="get">
+        <div class="field">
+            <input type="text" name="query" placeholder="Search">
+        </div>
+
+        <div class="field">
+{#            <label for="query">By</label>#}
+{#            <input type="text" name="criteria">#}
+{#            <button class="ui red button" type="submit">Search</button>#}
+            <select class="ui dropdown" name="by">
+                <option value="">By</option>
+                {% for heading in table_headings %}
+                    <option value="{{ heading }}">{{ heading }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button class="ui red button" type="submit">Search</button>
+    </form>
+</div>

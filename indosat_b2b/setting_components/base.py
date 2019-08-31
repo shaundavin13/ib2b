@@ -127,3 +127,5 @@ STATICFILES_DIRS = [
 LOGIN_URL = 'core:login'
 LOGIN_REDIRECT_URL = 'core:dashboard'
 LOGOUT_REDIRECT_URL = 'core:index'
+
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"

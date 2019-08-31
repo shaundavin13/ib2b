@@ -1,0 +1,17 @@
+{% extends 'core/ticket_base.html' %}
+
+{% block content_header %}
+    <h2 class="ui header">Closed Tickets</h2>
+{% endblock %}
+
+{% block metadata %}
+    {% include 'core/_metadata.html' with data=metadata %}
+{% endblock %}
+
+{% block metrics %}
+    <div class="ui three stackable cards">
+        {% include 'core/_metric.html' with title='Mean Time to Repair (hours)' content=mttr %}
+        {% include 'core/_metric.html' with title='Average Pending Time (hours)' content=average_pending_time %}
+        {% include 'core/_metric.html' with title='Most Problem Resolved' content=most_problem_resolved %}
+    </div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'core/__core_base.html' %}
+
+{% block content %}
+    <div class="ui container">
+        {% block content_header %}
+
+        {% endblock %}
+        {% block metadata %}
+
+        {% endblock %}
+        {% block metrics %}
+
+        {% endblock %}
+
+        {% block search_filter %}
+            {% include 'core/_search_filter_section.html' with table_headings=table_headings %}
+        {% endblock %}
+        {% block table %}
+            {% include 'core/_table.html' with table_headings=table_headings data=data %}
+        {% endblock %}
+    </div>
+{% endblock %}
+

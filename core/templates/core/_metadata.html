@@ -1,0 +1,14 @@
+<div class="metadata">
+    <table class="ui very basic collapsing table">
+        <tbody>
+        {% for row in data %}
+            <tr>
+            {% for cell in row %}
+                <td>{{ cell }}</td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </table>
+</div>
