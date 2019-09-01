@@ -12,3 +12,4 @@ staticfiles
 .env
 Semantic-UI-CSS-master
 node_modules
+pkl_cache
