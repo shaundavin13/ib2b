@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from urllib.parse import quote_plus
 import pandas as pd
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import SuspiciousOperation
@@ -24,19 +25,24 @@ def read_excel(sheet_name):
     return pd.read_excel(fname, sheet_name)
 
 def load_open_tickets():
-    return read_excel(open_ticket_sheet_name)
+    df = read_excel(open_ticket_sheet_name)
+    df['SERVICE_ID'] = df['SERVICE_ID'].astype('str').apply(lambda x: x.replace('/', '%2F'))
+    return df
 
 
 def load_links():
     df = read_excel(links_sheet_name)
+    df['SERVICE_ID'] = df['SERVICE_ID'].astype('str').apply(lambda x: x.replace('/', '%2F'))
     return df[pd.notnull(df.SALES_NAME)]
 
 def load_closed_tickets():
-    return read_excel(closed_ticket_sheet_name)
+    df = read_excel(closed_ticket_sheet_name)
+    df['SERVICE_ID'] = df['SERVICE_ID'].astype('str').apply(lambda x: x.replace('/', '%2F'))
+    return df
 
 open_tickets = load_open_tickets()
 closed_tickets = load_closed_tickets()
-links_df = read_excel(links_sheet_name)
+links_df = load_links()
 
 class IndexView(TemplateView):
     def get(self, request, *args, **kwargs):
@@ -68,6 +74,10 @@ class DashboardView(LoginRequiredMixin, View):
         mrc_expired_soon = as_rupiah(links_expired_soon['MRC_IDR'].sum())
         num_expired_soon = len(links_expired_soon)
 
+        service_id_index = table_headings.index('SERVICE_ID')
+        open_ticket_index = table_headings.index('OPEN_TICKET')
+        closed_ticket_index = table_headings.index('CLOSED_TICKET')
+
         context = dict(
             table_headings=table_headings,
             data=data,
@@ -77,6 +87,9 @@ class DashboardView(LoginRequiredMixin, View):
             total_mrc=total_mrc,
             mrc_expired_soon=mrc_expired_soon,
             num_expired_soon=num_expired_soon,
+            service_id_index=service_id_index,
+            open_ticket_index=open_ticket_index,
+            closed_ticket_index=closed_ticket_index,
         )
 
         return render(request, 'core/dashboard.html', context)

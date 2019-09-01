@@ -1,5 +1,7 @@
 {% extends 'core/__ticket_base.html' %}
 
+{% load template_filters %}
+
 {% block content_header %}
     <h2 class="ui header">Dashboard</h2>
 {% endblock %}
@@ -13,7 +15,36 @@
 {% endblock %}
 
 {% block table %}
-    {{ block.super }}
+    <div class="table-container">
+        <table class="ui red collapsing sortable selectable celled table">
+            <thead>
+            <tr>
+                {% for heading in table_headings %}
+                    <th>{{ heading }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in data %}
+                <tr>
+                    {% for cell in row %}
+                        {% if forloop.counter0 == open_ticket_index %}
+                            <td>
+                                <a href="{% url 'core:open-ticket' service_id=row|getitem:service_id_index %}">{{ cell }}</a>
+                            </td>
+                        {% elif forloop.counter0 == closed_ticket_index %}
+                            <td>
+                                <a href="{% url 'core:closed-ticket' service_id=row|getitem:service_id_index %}">{{ cell }}</a>
+                            </td>
+                        {% else %}
+                            <td>{{ cell }}</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     <div class="ui center aligned container pagination-container">
         <div class="ui center aligned pagination menu">
