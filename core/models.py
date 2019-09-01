@@ -6,12 +6,11 @@ from django.db import models
 # Create your models here.
 
 class User(AbstractUser):
-    username_validator = UnicodeUsernameValidator()
-    email = models.EmailField('email address', blank=True, unique=True)
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
-    username = None
-    level = models.IntegerField()
+    # username_validator = UnicodeUsernameValidator()
+    # email = models.EmailField('email address', blank=True, unique=True)
+    # USERNAME_FIELD = 'email'
+    # REQUIRED_FIELDS = []
+    level = models.IntegerField(null=True)
 
     def get_salespeople(self):
         return getattr(self, f'subordinates_{self.level}').all() if self.level > 1 else []

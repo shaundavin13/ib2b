@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import numpy as np
+from django.conf import settings
 from django.http import Http404
 
 def is_int_dtype(series):
@@ -48,3 +49,24 @@ def is_expired_soon(termination_date):
 
 def as_rupiah(num):
     return 'Rp{:,}'.format(num)
+
+
+def transform_single_user(user):
+    try:
+        position = settings.HIERARCHY_LEVEL_NAMES[user.level] if user.level else 'N/A'
+    except KeyError:
+        raise ValueError(f'Corrupted data: user with username {user.username} has invalid level: {user.level}.')
+
+
+    return [
+        user.username,
+        position,
+        getattr(user.level_2_superior, 'username', 'N/A'),
+        getattr(user.level_3_superior, 'username', 'N/A'),
+        getattr(user.level_4_superior, 'username', 'N/A'),
+        user.last_login,
+        'Yes' if user.is_staff else 'No',
+    ]
+
+def process_user_data(users):
+    return [transform_single_user(user) for user in users]

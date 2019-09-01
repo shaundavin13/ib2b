@@ -5,19 +5,26 @@
         {% block content_header %}
 
         {% endblock %}
-        {% block metadata %}
+        {% if table_headings and data %}
+            {% block metadata %}
 
-        {% endblock %}
-        {% block metrics %}
+            {% endblock %}
+            {% block metrics %}
 
-        {% endblock %}
+            {% endblock %}
 
-        {% block search_filter %}
-            {% include 'core/_search_filter_section.html' with table_headings=table_headings %}
-        {% endblock %}
-        {% block table %}
-            {% include 'core/_table.html' with table_headings=table_headings data=data %}
-        {% endblock %}
+            {% block search_filter %}
+
+                {% include 'core/_search_filter_section.html' with table_headings=table_headings %}
+
+            {% endblock %}
+            {% block table %}
+                {% include 'core/_table.html' with table_headings=table_headings data=data %}
+            {% endblock %}
+        {% else %}
+            <h3 class="ui center aligned header">There is no data available right now. Please contact your system
+                administrator.</h3>
+        {% endif %}
     </div>
 {% endblock %}
 

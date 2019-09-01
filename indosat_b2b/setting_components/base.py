@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'core',
-    'admin',
+    # 'admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -128,4 +128,24 @@ LOGIN_URL = 'core:login'
 LOGIN_REDIRECT_URL = 'core:dashboard'
 LOGOUT_REDIRECT_URL = 'core:index'
 
+PKL_CACHE_DIR = os.path.join(BASE_DIR, 'pkl_cache')
+
+PKL_FILENAMES = dict(
+    links_df='links.pkl',
+    closed_tickets_df='closed_ticket.pkl',
+    open_tickets_df='open_ticket.pkl',
+)
+
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+
+HIERARCHY_LEVEL_NAMES = ['Sales', 'AVP', 'VP', 'SVP', 'N/A', 'N/A']
+
+SHEET_NAMES = dict(
+    links_df='ASSET MIDI LINKS',
+    closed_tickets_df='CLOSED TICKET',
+    open_tickets_df = 'IN PROGRESS TICKET',
+)
+
+COLUMN_NAMES = dict(
+    service_id='SERVICE_ID',
+)

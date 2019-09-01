@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 
 from urllib.parse import quote_plus
 import pandas as pd
+from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import SuspiciousOperation
 from django.core.paginator import Paginator
@@ -9,40 +11,17 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 # Create your views here.
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import TemplateView
+from pip._vendor.distlib import metadata
 
-from core.helpers import filter_ticket_request, get_ticket_meta, query_request, is_expired_soon, as_rupiah
+from core.DataManager import DataManager
+from core.helpers import filter_ticket_request, get_ticket_meta, query_request, is_expired_soon, as_rupiah, \
+    process_user_data
+from core.models import User
 
-fname = 'CHURN DASHBOARD 2019.xlsx'
-hierarchy_sheet_name = 'SALES HIERARCHY'
-links_sheet_name = 'ASSET MIDI LINKS'
-sla_sheet_name = 'TICKET PERFORMANCE SLA'
-closed_ticket_sheet_name = 'CLOSED TICKET'
-open_ticket_sheet_name = 'IN PROGRESS TICKET'
-
-def read_excel(sheet_name):
-    return pd.read_excel(fname, sheet_name)
-
-def load_open_tickets():
-    df = read_excel(open_ticket_sheet_name)
-    df['SERVICE_ID'] = df['SERVICE_ID'].astype('str').apply(lambda x: x.replace('/', '%2F'))
-    return df
-
-
-def load_links():
-    df = read_excel(links_sheet_name)
-    df['SERVICE_ID'] = df['SERVICE_ID'].astype('str').apply(lambda x: x.replace('/', '%2F'))
-    return df[pd.notnull(df.SALES_NAME)]
-
-def load_closed_tickets():
-    df = read_excel(closed_ticket_sheet_name)
-    df['SERVICE_ID'] = df['SERVICE_ID'].astype('str').apply(lambda x: x.replace('/', '%2F'))
-    return df
-
-open_tickets = load_open_tickets()
-closed_tickets = load_closed_tickets()
-links_df = load_links()
+data_manager = DataManager()
 
 class IndexView(TemplateView):
     def get(self, request, *args, **kwargs):
@@ -55,9 +34,12 @@ class DashboardView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
 
-        table_headings = links_df.columns.tolist()
+        if not data_manager._initialized:
+            return render(request, template_name='core/dashboard.html')  # todo: conditional in template for empty state
 
-        queried = query_request(request, links_df)
+        table_headings = data_manager.links_df.columns.tolist()
+
+        queried = query_request(request, data_manager.links_df)
 
         try:
             req_page = request.GET.get('page', 1) or 1
@@ -98,8 +80,10 @@ class DashboardView(LoginRequiredMixin, View):
 class ClosedTicketView(LoginRequiredMixin, View):
 
     def get(self, request, *args, service_id=None, **kwargs):
-        queried = filter_ticket_request(request, closed_tickets, service_id)
-        metadata = get_ticket_meta(links_df, service_id)
+        if not data_manager._initialized:
+            return render(request, template_name='core/closed_ticket.html')  # todo: conditional in template for empty state
+        queried = filter_ticket_request(request, data_manager.closed_tickets_df, service_id)
+        metadata = get_ticket_meta(data_manager.links_df, service_id)
 
         mttr = queried.HANDLING_TIME_HOURS.mean() or 'N/A'
         average_pending_time = queried.PENDING_TIME_HOURS.mean() or 'N/A'
@@ -127,8 +111,11 @@ class ClosedTicketView(LoginRequiredMixin, View):
 class OpenTicketView(LoginRequiredMixin, View):
 
     def get(self, request, *args, service_id=None, **kwargs):
-        queried = filter_ticket_request(request, open_tickets, service_id)
-        metadata = get_ticket_meta(links_df, service_id)
+        if not data_manager._initialized:
+            return render(request, template_name='core/open_ticket.html') #todo: conditional in template for empty state
+
+        queried = filter_ticket_request(request, data_manager.open_tickets_df, service_id)
+        metadata = get_ticket_meta(data_manager.links_df, service_id)
 
         buffer = timedelta(days=3)
 
@@ -149,3 +136,29 @@ class OpenTicketView(LoginRequiredMixin, View):
 
 
         return render(request, template_name='core/open_ticket.html', context=context)
+
+class UsersView(View):
+
+    @method_decorator(staff_member_required(login_url=settings.LOGIN_URL))
+    def get(self, request, *args, **kwargs):
+        context = dict(
+            data=process_user_data(User.objects.all()),
+            table_headings=['Username', 'Position', 'AVP', 'VP', 'SVP', 'Last Login', 'Is Staff'],
+        )
+
+        return render(request, template_name='core/users.html', context=context)
+
+
+class ImportView(View):
+
+    def get(self, request, *args, **kwargs):
+        return render(request, template_name='core/import.html')
+
+    def post(self, request, *args, **kwargs):
+        try:
+            f = request.FILES['file']
+        except KeyError:
+            raise SuspiciousOperation(f'Unexpected payload: {request.FILES}')
+        data_manager.load_data(f)
+        return render(request, template_name='core/import.html', context=dict(success=True))
+

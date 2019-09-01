@@ -1,0 +1,25 @@
+{% extends 'core/__core_base.html' %}
+{% block content %}
+    <div class="ui container">
+        <h2 class="ui header">Import data</h2>
+        {% if success %}
+            <div class="ui positive message">
+                <i class="close icon"></i>
+                <div class="header">
+                    Success!
+                </div>
+                Data has been successfully uploaded! Click the site icon on the top left to view the newly uploaded data.
+            </div>
+        {% endif %}
+        <form action="" class="ui form" method="post" enctype="multipart/form-data">
+            <div class="field input-container">
+                <button class="ui red large button import-button">
+                    Select File
+                    <input type="file" name="file" class="file-input-hidden">
+                </button>
+            </div>
+            {% csrf_token %}
+            <button class="ui medium button" type="submit">Upload</button>
+        </form>
+    </div>
+{% endblock %}
