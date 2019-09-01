@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import SuspiciousOperation
+from django.core.paginator import Paginator
 from django.http import Http404
 from django.shortcuts import render, redirect
 # Create your views here.
@@ -9,7 +11,7 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView
 
-from core.helpers import filter_ticket_request, get_ticket_meta
+from core.helpers import filter_ticket_request, get_ticket_meta, query_request, is_expired_soon, as_rupiah
 
 fname = 'CHURN DASHBOARD 2019.xlsx'
 hierarchy_sheet_name = 'SALES HIERARCHY'
@@ -43,8 +45,41 @@ class IndexView(TemplateView):
         else:
             return redirect(reverse('core:login'))
 
-class DashboardView(LoginRequiredMixin, TemplateView):
-    template_name = 'core/dashboard.html'
+class DashboardView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+
+        table_headings = links_df.columns.tolist()
+
+        queried = query_request(request, links_df)
+
+        try:
+            req_page = request.GET.get('page', 1) or 1
+            page_num = int(req_page)
+        except (ValueError, TypeError):
+            raise SuspiciousOperation('Page number is invalid')
+
+        p = Paginator(queried.values.tolist(), 50)
+
+        data = p.page(page_num)
+
+        total_mrc = as_rupiah(queried.MRC_IDR.sum())
+        links_expired_soon = queried[queried['TERMINATION_DATE'].apply(is_expired_soon)]
+        mrc_expired_soon = as_rupiah(links_expired_soon['MRC_IDR'].sum())
+        num_expired_soon = len(links_expired_soon)
+
+        context = dict(
+            table_headings=table_headings,
+            data=data,
+            page_range=range(1, p.num_pages + 1),
+            current_page=page_num,
+            paginator=p,
+            total_mrc=total_mrc,
+            mrc_expired_soon=mrc_expired_soon,
+            num_expired_soon=num_expired_soon,
+        )
+
+        return render(request, 'core/dashboard.html', context)
 
 
 class ClosedTicketView(LoginRequiredMixin, View):

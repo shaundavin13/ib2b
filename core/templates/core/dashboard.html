@@ -1,2 +1,42 @@
-{% extends 'core/__core_base.html' %}
+{% extends 'core/__ticket_base.html' %}
+
+{% block content_header %}
+    <h2 class="ui header">Dashboard</h2>
+{% endblock %}
+
+{% block metrics %}
+    <div class="ui three stackable cards">
+        {% include 'core/_metric.html' with title='Total MRC of All Links' content=total_mrc %}
+        {% include 'core/_metric.html' with title='MRC Expired within 2 Months' content=mrc_expired_soon %}
+        {% include 'core/_metric.html' with title='Link Expired within 2 Months' content=num_expired_soon %}
+    </div>
+{% endblock %}
+
+{% block table %}
+    {{ block.super }}
+
+    <div class="ui center aligned container pagination-container">
+        <div class="ui center aligned pagination menu">
+
+            {% if data.has_previous %}
+                {% if current_page != 2 %}
+                    <a href="?page=1" class="item">First</a>
+                {% endif %}
+                <a href="?page={{ data.previous_page_number }}" class="item">{{ data.previous_page_number }}</a>
+            {% endif %}
+
+            <a href="" class="ui inverted active item">Page {{ current_page }} of {{ data.paginator.num_pages }}</a>
+
+            {% if data.has_next %}
+                <a href="?page={{ data.next_page_number }}" class="item">{{ data.next_page_number }}</a>
+                {% if current_page != data.num_pages|add:"-1" %}
+                    <a href="?page={{ data.paginator.num_pages }}" class="item">Last</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+
+
+{% endblock %}
 

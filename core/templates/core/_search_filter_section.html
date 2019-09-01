@@ -5,9 +5,6 @@
         </div>
 
         <div class="field">
-{#            <label for="query">By</label>#}
-{#            <input type="text" name="criteria">#}
-{#            <button class="ui red button" type="submit">Search</button>#}
             <select class="ui dropdown" name="by">
                 <option value="">By</option>
                 {% for heading in table_headings %}
@@ -15,6 +12,7 @@
                 {% endfor %}
             </select>
         </div>
+{#        Add sort functionality #}
         <button class="ui red button" type="submit">Search</button>
     </form>
 </div>
