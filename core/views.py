@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import Http404
 from django.shortcuts import render, redirect
 # Create your views here.
 from django.urls import reverse
@@ -50,11 +51,16 @@ class ClosedTicketView(LoginRequiredMixin, View):
 
     def get(self, request, *args, service_id=None, **kwargs):
         queried = filter_ticket_request(request, closed_tickets, service_id)
-
-        mttr = queried.HANDLING_TIME_HOURS.mean()
-        average_pending_time = queried.PENDING_TIME_HOURS.mean()
-        most_problem_resolved = queried['PROBLEM_TIER 1'].mode().iloc[0]
         metadata = get_ticket_meta(links_df, service_id)
+
+        mttr = queried.HANDLING_TIME_HOURS.mean() or 'N/A'
+        average_pending_time = queried.PENDING_TIME_HOURS.mean() or 'N/A'
+
+        try:
+            most_problem_resolved = queried['PROBLEM_TIER 1'].mode().iloc[0]
+        except IndexError:
+            most_problem_resolved = 'N/A'
+
 
         context = dict(
             data=queried.values.tolist(),
@@ -74,13 +80,13 @@ class OpenTicketView(LoginRequiredMixin, View):
 
     def get(self, request, *args, service_id=None, **kwargs):
         queried = filter_ticket_request(request, open_tickets, service_id)
+        metadata = get_ticket_meta(links_df, service_id)
 
         buffer = timedelta(days=3)
 
         average_sr_duration = queried.SR_DURATION_HOURS.mean()
         num_late = len(queried[queried.TICKET_DUE_DATE.apply(lambda x: x < datetime.today())])
         num_expired_soon = len(queried[queried.TICKET_DUE_DATE.apply(lambda x: x - datetime.today() < buffer)])  - num_late
-        metadata = get_ticket_meta(links_df, service_id)
 
 
         context = dict(
