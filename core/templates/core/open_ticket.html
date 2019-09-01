@@ -1,5 +1,17 @@
-{% extends 'core/ticket_base.html' %}
+{% extends 'core/__ticket_base.html' %}
 
 {% block content_header %}
     <h2 class="ui header">Open Tickets</h2>
+{% endblock %}
+
+{% block metadata %}
+    {% include 'core/_metadata.html' with data=metadata %}
+{% endblock %}
+
+{% block metrics %}
+    <div class="ui three stackable cards">
+        {% include 'core/_metric.html' with title='Average SR duration (hours)' content=average_sr_duration %}
+        {% include 'core/_metric.html' with title='Ticket Passed Due Date (hours)' content=num_late %}
+        {% include 'core/_metric.html' with title='Ticket Exired Soon (Based on Due Date)' content=num_expired_soon %}
+    </div>
 {% endblock %}

@@ -1,13 +1,14 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LogoutView
-from django.http import Http404
-from django.shortcuts import render, redirect
+from datetime import datetime, timedelta
 
+import pandas as pd
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
 # Create your views here.
 from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView
-import pandas as pd
+
+from core.helpers import filter_ticket_request, get_ticket_meta
 
 fname = 'CHURN DASHBOARD 2019.xlsx'
 hierarchy_sheet_name = 'SALES HIERARCHY'
@@ -44,46 +45,16 @@ class IndexView(TemplateView):
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'core/dashboard.html'
 
-class OpenTicketView(LoginRequiredMixin, View):
-
-    def get(self, request, *args, service_id=None, **kwargs):
-
-        filtered = open_tickets[open_tickets['SERVICE_ID'] == service_id]
-
-        context = dict(data=filtered.values.tolist(), table_headings=filtered.columns.tolist())
-        return render(request, template_name='core/open_ticket.html', context=context)
-
 
 class ClosedTicketView(LoginRequiredMixin, View):
 
     def get(self, request, *args, service_id=None, **kwargs):
-        filtered = closed_tickets[closed_tickets['SERVICE_ID'] == service_id]
-
-        by = request.GET.get('by')
-        query = request.GET.get('query')
-        if by and query:
-            queried = filtered[filtered[by].str.contains(query, case=False, na='')]
-        else:
-            queried = filtered
+        queried = filter_ticket_request(request, closed_tickets, service_id)
 
         mttr = queried.HANDLING_TIME_HOURS.mean()
         average_pending_time = queried.PENDING_TIME_HOURS.mean()
         most_problem_resolved = queried['PROBLEM_TIER 1'].mode().iloc[0]
-        try:
-            link = links_df[links_df['SERVICE_ID'] == service_id].iloc[0]
-        except IndexError:
-            raise Http404(f'Service with service id {service_id} does not exist')
-
-        service_detail = link.PRODUCT_DETAIL
-        ba_num = link.BA_NUMBER
-        ba_name = link.CA_NAME
-
-        metadata = [
-            ['Service/Link/Circuit ID', service_id],
-            ['Services', service_detail],
-            ['BA Number/Ref', ba_num],
-            ['BA Name', ba_name],
-        ]
+        metadata = get_ticket_meta(links_df, service_id)
 
         context = dict(
             data=queried.values.tolist(),
@@ -99,3 +70,28 @@ class ClosedTicketView(LoginRequiredMixin, View):
         return render(request, template_name='core/closed_ticket.html', context=context)
 
 
+class OpenTicketView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, service_id=None, **kwargs):
+        queried = filter_ticket_request(request, open_tickets, service_id)
+
+        buffer = timedelta(days=3)
+
+        average_sr_duration = queried.SR_DURATION_HOURS.mean()
+        num_late = len(queried[queried.TICKET_DUE_DATE.apply(lambda x: x < datetime.today())])
+        num_expired_soon = len(queried[queried.TICKET_DUE_DATE.apply(lambda x: x - datetime.today() < buffer)])  - num_late
+        metadata = get_ticket_meta(links_df, service_id)
+
+
+        context = dict(
+            data=queried.values.tolist(),
+            table_headings=queried.columns.tolist(),
+            average_sr_duration=average_sr_duration,
+            num_late=num_late,
+            num_expired_soon=num_expired_soon,
+            metadata=metadata,
+        )
+
+
+
+        return render(request, template_name='core/open_ticket.html', context=context)
