@@ -150,3 +150,7 @@ SHEET_NAMES = dict(
 COLUMN_NAMES = dict(
     service_id='SERVICE_ID',
 )
+
+import django_heroku
+
+django_heroku.settings(locals())
