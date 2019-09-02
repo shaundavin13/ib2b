@@ -65,8 +65,12 @@ class DashboardView(LoginRequiredMixin, View):
         open_ticket_index = table_headings.index('OPEN_TICKET')
         closed_ticket_index = table_headings.index('CLOSED_TICKET')
 
+        dtypes = [(col, data_manager.links_df[col].dtype.name) for col in data_manager.links_df.columns]
+        searchable_columns = [i[0] for i in dtypes if i[1] == 'object']
+
         context = dict(
             table_headings=table_headings,
+            searchable_columns=searchable_columns,
             data=data,
             page_range=range(1, p.num_pages + 1),
             current_page=page_num,
@@ -98,10 +102,13 @@ class ClosedTicketView(LoginRequiredMixin, View):
         except IndexError:
             most_problem_resolved = 'N/A'
 
+        dtypes = [(col, data_manager.closed_tickets_df[col].dtype.name) for col in data_manager.closed_tickets_df.columns]
+        searchable_columns = [i[0] for i in dtypes if i[1] == 'object']
 
         context = dict(
             data=queried.values.tolist(),
             table_headings=queried.columns.tolist(),
+            searchable_columns=searchable_columns,
             mttr=mttr,
             average_pending_time=average_pending_time,
             most_problem_resolved=most_problem_resolved,
@@ -128,9 +135,12 @@ class OpenTicketView(LoginRequiredMixin, View):
         num_late = len(queried[queried.TICKET_DUE_DATE.apply(lambda x: x < datetime.today())])
         num_expired_soon = len(queried[queried.TICKET_DUE_DATE.apply(lambda x: x - datetime.today() < buffer)])  - num_late
 
+        dtypes = [(col, data_manager.open_tickets_df[col].dtype.name) for col in data_manager.open_tickets_df.columns]
+        searchable_columns = [i[0] for i in dtypes if i[1] == 'object']
 
         context = dict(
             data=queried.values.tolist(),
+            searchable_columns=searchable_columns,
             table_headings=queried.columns.tolist(),
             average_sr_duration=average_sr_duration,
             num_late=num_late,
@@ -165,7 +175,7 @@ class ImportView(View):
         except KeyError:
             raise SuspiciousOperation(f'Unexpected payload: {request.FILES}')
         data_manager.load_data(f)
-        user_manager.load_users(f)
+        # user_manager.load_users(f)
 
         return render(request, template_name='core/import.html', context=dict(success=True))
 

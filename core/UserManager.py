@@ -53,12 +53,6 @@ class UserManager(object):
 
 
 
-
-
-
-
-
-
         updated_usernames = {u['username'] for u in new_user_data}
 
         for user in User.objects.filter(is_staff=False).all():

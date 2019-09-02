@@ -7,8 +7,8 @@
         <div class="field">
             <select class="ui dropdown" name="by">
                 <option value="">By</option>
-                {% for heading in table_headings %}
-                    <option value="{{ heading }}">{{ heading }}</option>
+                {% for columns in searchable_columns %}
+                    <option value="{{ columns }}">{{ columns }}</option>
                 {% endfor %}
             </select>
         </div>

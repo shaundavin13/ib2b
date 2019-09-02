@@ -51,17 +51,17 @@
 
             {% if data.has_previous %}
                 {% if current_page != 2 %}
-                    <a href="?page=1" class="item">First</a>
+                    <a href="{% url 'core:dashboard' %}" class="item">First</a>
                 {% endif %}
-                <a href="?page={{ data.previous_page_number }}" class="item">{{ data.previous_page_number }}</a>
+                <a href="{% url 'core:dashboard' %}?{% paginate request page=data.previous_page_number %}" class="item">{{ data.previous_page_number }}</a>
             {% endif %}
 
             <a href="" class="ui inverted active item">Page {{ current_page }} of {{ data.paginator.num_pages }}</a>
 
             {% if data.has_next %}
-                <a href="?page={{ data.next_page_number }}" class="item">{{ data.next_page_number }}</a>
+                <a href="{% url 'core:dashboard' %}?{% paginate request page=data.next_page_number %}" class="item">{{ data.next_page_number }}</a>
                 {% if current_page != data.num_pages|add:"-1" %}
-                    <a href="?page={{ data.paginator.num_pages }}" class="item">Last</a>
+                    <a href="{% url 'core:dashboard' %}?{% paginate request page=data.paginator.num_pages %}" class="item">Last</a>
                 {% endif %}
             {% endif %}
         </div>

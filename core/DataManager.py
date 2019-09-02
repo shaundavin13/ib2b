@@ -62,4 +62,5 @@ class DataManager(object):
     def load_links(self, f):
         df = pd.read_excel(f, self.sheet_names['links_df'])
         self._clean_service_id(df)
+        df['BA_NUMBER'] = df['BA_NUMBER'].apply(lambda x: str(x)).astype('str')
         return df

@@ -74,8 +74,12 @@ WSGI_APPLICATION = 'indosat_b2b.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'USER': 'whketaqfdadnvw',
+        'PASSWORD': '5a70394ed7998a41445dda036f0a25b1a266a6f13defc98f186868ec9ef54f1d',
+        'HOST': 'ec2-176-34-183-20.eu-west-1.compute.amazonaws.com',
+        'PORT': '5432',
+        'NAME': 'd94doiptin5tdt',
     }
 }
 
