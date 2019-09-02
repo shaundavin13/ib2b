@@ -58,6 +58,7 @@ class DashboardView(LoginRequiredMixin, View):
         total_mrc = as_rupiah(queried.MRC_IDR.sum())
         links_expired_soon = queried[queried['TERMINATION_DATE'].apply(is_expired_soon)]
         mrc_expired_soon = as_rupiah(links_expired_soon['MRC_IDR'].sum())
+        # Todo: Must revisit user importing system - reporting lines not saved probably due to empty foreignkey
         num_expired_soon = len(links_expired_soon)
 
         service_id_index = table_headings.index('SERVICE_ID')

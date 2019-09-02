@@ -13,9 +13,9 @@ def query_request(request, df):
     query = request.GET.get('query')
     if by and query:
         if is_int_dtype(df[by]):
-            queried = df[df[by].astype('str').str.contains(query, case=False, na='')]
+            queried = df[df[by].astype('str').str.contains(query, case=False, na=False)]
         else:
-            queried = df[df[by].str.contains(query, case=False, na='')]
+            queried = df[df[by].str.contains(query, case=False, na=False)]
     else:
         queried = df
 
