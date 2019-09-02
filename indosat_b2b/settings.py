@@ -8,5 +8,5 @@ load_dotenv()
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'local')
 include(
     'setting_components/base.py',
-    'setting_components/{}.py'.format(ENVIRONMENT).lower()
+    # 'setting_components/{}.py'.format(ENVIRONMENT).lower()
 )
