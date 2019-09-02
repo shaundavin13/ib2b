@@ -17,11 +17,13 @@ from django.views.generic import TemplateView
 from pip._vendor.distlib import metadata
 
 from core.DataManager import DataManager
+from core.UserManager import UserManager
 from core.helpers import filter_ticket_request, get_ticket_meta, query_request, is_expired_soon, as_rupiah, \
     process_user_data
 from core.models import User
 
 data_manager = DataManager()
+user_manager = UserManager()
 
 class IndexView(TemplateView):
     def get(self, request, *args, **kwargs):
@@ -159,6 +161,8 @@ class ImportView(View):
             f = request.FILES['file']
         except KeyError:
             raise SuspiciousOperation(f'Unexpected payload: {request.FILES}')
-        data_manager.load_data(f)
+        # data_manager.load_data(f)
+        user_manager.load_users(f)
+
         return render(request, template_name='core/import.html', context=dict(success=True))
 

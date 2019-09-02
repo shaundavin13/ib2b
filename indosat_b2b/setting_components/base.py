@@ -138,7 +138,8 @@ PKL_FILENAMES = dict(
 
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 
-HIERARCHY_LEVEL_NAMES = ['Sales', 'AVP', 'VP', 'SVP', 'N/A', 'N/A']
+HIERARCHY_LEVEL_NAMES = ['SALES_NAME', 'AVP', 'VP', 'SVP', 'N/A', 'N/A']
+HIERARCHY_SHEET_NAME = 'SALES HIERARCHY'
 
 SHEET_NAMES = dict(
     links_df='ASSET MIDI LINKS',

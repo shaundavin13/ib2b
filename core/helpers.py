@@ -47,13 +47,14 @@ def is_expired_soon(termination_date):
     diff = termination_date - datetime.today()
     return diff < timedelta(days=60) and diff > timedelta(0, 0)
 
+
 def as_rupiah(num):
-    return 'Rp{:,}'.format(num)
+    return 'Rp{:,.2f}'.format(num)
 
 
 def transform_single_user(user):
     try:
-        position = settings.HIERARCHY_LEVEL_NAMES[user.level] if user.level else 'N/A'
+        position = settings.HIERARCHY_LEVEL_NAMES[user.level - 1] if user.level else 'N/A'
     except KeyError:
         raise ValueError(f'Corrupted data: user with username {user.username} has invalid level: {user.level}.')
 
