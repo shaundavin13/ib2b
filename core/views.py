@@ -19,7 +19,7 @@ from pip._vendor.distlib import metadata
 from core.DataManager import DataManager
 from core.UserManager import UserManager
 from core.helpers import filter_ticket_request, get_ticket_meta, query_request, is_expired_soon, as_rupiah, \
-    process_user_data
+    process_user_data, filter_results_by_user
 from core.models import User
 
 data_manager = DataManager()
@@ -48,6 +48,8 @@ class DashboardView(LoginRequiredMixin, View):
             page_num = int(req_page)
         except (ValueError, TypeError):
             raise SuspiciousOperation('Page number is invalid')
+
+        queried = filter_results_by_user(request, queried)
 
         p = Paginator(queried.values.tolist(), 50)
 
@@ -161,7 +163,7 @@ class ImportView(View):
             f = request.FILES['file']
         except KeyError:
             raise SuspiciousOperation(f'Unexpected payload: {request.FILES}')
-        # data_manager.load_data(f)
+        data_manager.load_data(f)
         user_manager.load_users(f)
 
         return render(request, template_name='core/import.html', context=dict(success=True))

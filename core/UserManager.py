@@ -11,9 +11,9 @@ class UserManager(object):
         self.create_models(self.parse_file(f))
 
     def parse_file(self, f):
-        df = pd.read_excel(f, settings.HIERARCHY_SHEET_NAME).dropna(axis=1)
+        df = pd.read_excel(f, settings.HIERARCHY_SHEET_NAME).dropna(axis=1, how='all')
         for column in df.columns:
-            df[column] = df[column].apply(lambda cell: re.sub('[^0-9a-zA-Z ]+', '', cell))
+            df[column] = df[column].apply(lambda cell: re.sub('[^0-9a-zA-Z ]+', '', cell) if not pd.isnull(cell) else cell)
         return df
 
     def _create_user_dict(self, row, level):
@@ -96,78 +96,3 @@ class UserManager(object):
                 existing_user.level_6_superior = uname_map.get(user_data['level_6_superior'])
                 existing_user.level = user_data['level']
                 existing_user.save()
-
-        # fields = [
-        #
-        #     'level',
-        #     'level_2_superior',
-        #     'level_3_superior',
-        #     'level_4_superior',
-        #     'level_5_superior',
-        #     'level_6_superior',
-        # ]
-        #
-        # col = getattr(df, hierarchy[3], None)
-        #
-        # if col is not None:
-        #     for user in users:
-        #         if user.username not in set(col.unique()):
-        #             user.delete()
-        #     for uname in col.unique():
-        #         try:
-        #             user = uname_map[uname]
-        #         except KeyError:
-        #             created_user = User.objects.create(username=uname, level=4)
-        #             uname_map[uname] = created_user
-        #         else:
-        #             user.level_2_superior = None
-        #             user.level_3_superior = None
-        #             user.level_4_superior = None
-        #             user.level_5_superior = None
-        #             user.level = 4
-        #             user.save()
-        #
-        # col = getattr(df, hierarchy[2], None)
-        #
-        # if col is not None:
-        #     for user in users:
-        #         if user.username not in set(col.unique()):
-        #             user.delete()
-        #     for uname in col.unique():
-        #         try:
-        #             user = uname_map[uname]
-        #         except KeyError:
-        #             created_user = User.objects.create(username=uname, level=4)
-        #             uname_map[uname] = created_user
-        #         else:
-        #             user.level_2_superior = None
-        #             user.level_3_superior = None
-        #             user.level_4_superior = None
-        #             user.level_5_superior = None
-        #             user.level = 4
-        #             user.save()
-
-
-
-
-
-
-
-
-
-
-        # for level in range(0, 6):
-        #     names = getattr(df, hierarchy[level], None)
-        #     if names is not None:
-        #         rows = [df[names == name].iloc[0] for name in set(names)]
-        #         User.objects.bulk_create([User(
-        #             username=getattr(row, hierarchy[level]),
-        #             level=level,
-        #             level_2_superior=None,
-        #             level_3_superior=getattr(row, hierarchy[2], None) if level < 2 else None,
-        #             level_4_superior=getattr(row, hierarchy[3], None) if level < 3 else None,
-        #             level_5_superior=getattr(row, hierarchy[4], None) if level < 4 else None,
-        #             level_6_superior=getattr(row, hierarchy[5], None) if level < 5 else None,
-        #         ) for row in rows])
-
-

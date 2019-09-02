@@ -71,3 +71,13 @@ def transform_single_user(user):
 
 def process_user_data(users):
     return [transform_single_user(user) for user in users]
+
+def filter_results_by_user(request, df):
+    user = request.user
+    if user.is_staff:
+        return df
+    if user.level == 1:
+        return df[df['SALES_NAME'] == user.username]
+    else:
+        subordinate_usernames = {s.username for s in getattr(user, f'subordinates_{user.level}').all()}
+        return df[df['SALES_NAME'].apply(lambda name: name in subordinate_usernames)]
