@@ -13,10 +13,10 @@
         {% endif %}
         <form action="" class="ui form" method="post" enctype="multipart/form-data">
             <div class="field input-container">
-                <button class="ui red large button import-button">
+                <div class="ui red large button import-button">
                     Select File
                     <input type="file" name="file" class="file-input-hidden">
-                </button>
+                </div>
             </div>
             {% csrf_token %}
             <button class="ui medium button" type="submit">Upload</button>
