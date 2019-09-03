@@ -74,7 +74,7 @@ def process_user_data(users):
 
 def filter_results_by_user(request, df):
     user = request.user
-    if user.is_staff:
+    if user.is_staff or df.empty:
         return df
     if user.level == 1:
         return df[df['SALES_NAME'] == user.username]

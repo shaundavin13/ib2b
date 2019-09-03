@@ -1,13 +1,13 @@
 {% extends '__base.html' %}
 
 {% block body %}
-    <div class="ui middle aligned centered grid" id="index-container">
-        <div class="ui four column row">
-            <div class="ui column">
+    <div id="login-container">
+        <div class="ui container" id="index-container">
+            <div class="login-box">
 
-                <img src="/static/images/logo.png" alt="logo" class="ui medium centered image">
-                <h3 class="ui centered header">Sales Enablement Tool</h3>
-                <h1 class="ui centered header">Links Dashboard</h1>
+                <img src="/static/images/logo.png" alt="logo" class="ui small centered image">
+                <h4 class="ui centered header">Sales Enablement Tool</h4>
+                <h2 class="ui centered header">Links Dashboard</h2>
                 {% if form.non_field_errors %}
                     <ul>
                         {% for error in form.non_field_errors %}

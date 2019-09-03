@@ -56,7 +56,8 @@ class DashboardView(LoginRequiredMixin, View):
         data = p.page(page_num)
 
         total_mrc = as_rupiah(queried.MRC_IDR.sum())
-        links_expired_soon = queried[queried['TERMINATION_DATE'].apply(is_expired_soon)]
+
+        links_expired_soon = queried if queried.empty else queried[queried['TERMINATION_DATE'].apply(is_expired_soon)]
         mrc_expired_soon = as_rupiah(links_expired_soon['MRC_IDR'].sum())
         # Todo: Must revisit user importing system - reporting lines not saved probably due to empty foreignkey
         num_expired_soon = len(links_expired_soon)
@@ -81,6 +82,8 @@ class DashboardView(LoginRequiredMixin, View):
             service_id_index=service_id_index,
             open_ticket_index=open_ticket_index,
             closed_ticket_index=closed_ticket_index,
+            query=request.GET.get('query'),
+            filter_by=request.GET.get('by'),
         )
 
         return render(request, 'core/dashboard.html', context)

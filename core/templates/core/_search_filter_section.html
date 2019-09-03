@@ -1,18 +1,18 @@
 <div class="search-filter">
     <form action="" class="ui form" method="get">
         <div class="field">
-            <input type="text" name="query" placeholder="Search">
+            <input type="text" value="{% if query %}{{ query }}{% endif %}" name="query" placeholder="Search">
         </div>
 
         <div class="field">
             <select class="ui dropdown" name="by">
                 <option value="">By</option>
-                {% for columns in searchable_columns %}
-                    <option value="{{ columns }}">{{ columns }}</option>
+                {% for column in searchable_columns %}
+                    <option value="{{ column }}">{{ column }}</option>
                 {% endfor %}
             </select>
         </div>
-{#        Add sort functionality #}
+        {#        Add sort functionality #}
         <button class="ui red button" type="submit">Search</button>
     </form>
 </div>
