@@ -3,15 +3,16 @@ import re
 import pandas as pd
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db import transaction
 
 User = get_user_model()
 
 class UserManager(object):
-    def load_users(self, f):
-        self.create_models(self.parse_file(f))
+    def load_users(self, dfs):
+        self.create_models(self.parse_dfs(dfs))
 
-    def parse_file(self, f):
-        df = pd.read_excel(f, settings.HIERARCHY_SHEET_NAME).dropna(axis=1, how='all')
+    def parse_dfs(self, dfs):
+        df = dfs[settings.HIERARCHY_SHEET_NAME].dropna(axis=1, how='all')
         for column in df.columns:
             df[column] = df[column].apply(lambda cell: re.sub('[^0-9a-zA-Z ]+', '', cell) if not pd.isnull(cell) else cell)
         return df
@@ -55,38 +56,41 @@ class UserManager(object):
 
         updated_usernames = {u['username'] for u in new_user_data}
 
-        for user in User.objects.filter(is_staff=False).all():
+        users = User.objects.filter(is_staff=False).all()
+        for user in users:
             if user.username not in updated_usernames:
                 user.delete()
 
-        users = User.objects.all()
-
         uname_map = {user.username: user for user in users}
 
-        for user_data in new_user_data:
-            try:
-                existing_user = uname_map[user_data['username']]
-            except KeyError:
-                level_2_superior = uname_map.get(user_data['level_2_superior'])
-                level_3_superior = uname_map.get(user_data['level_3_superior'])
-                level_4_superior = uname_map.get(user_data['level_4_superior'])
-                level_5_superior = uname_map.get(user_data['level_5_superior'])
-                level_6_superior = uname_map.get(user_data['level_6_superior'])
+        users_to_bulk_create = []
 
-                User.objects.create(
-                    username=user_data['username'],
-                    level=user_data['level'],
-                    level_2_superior=level_2_superior,
-                    level_3_superior=level_3_superior,
-                    level_4_superior=level_4_superior,
-                    level_5_superior=level_5_superior,
-                    level_6_superior=level_6_superior,
-                )
-            else:
-                existing_user.level_2_superior = uname_map.get(user_data['level_2_superior'])
-                existing_user.level_3_superior = uname_map.get(user_data['level_3_superior'])
-                existing_user.level_4_superior = uname_map.get(user_data['level_4_superior'])
-                existing_user.level_5_superior = uname_map.get(user_data['level_5_superior'])
-                existing_user.level_6_superior = uname_map.get(user_data['level_6_superior'])
-                existing_user.level = user_data['level']
-                existing_user.save()
+        with transaction.atomic():
+
+            for user_data in new_user_data:
+                try:
+                    existing_user = uname_map[user_data['username']]
+                except KeyError:
+                    level_2_superior = uname_map.get(user_data['level_2_superior'])
+                    level_3_superior = uname_map.get(user_data['level_3_superior'])
+                    level_4_superior = uname_map.get(user_data['level_4_superior'])
+                    level_5_superior = uname_map.get(user_data['level_5_superior'])
+                    level_6_superior = uname_map.get(user_data['level_6_superior'])
+
+                    User.objects.create(
+                        username=user_data['username'],
+                        level=user_data['level'],
+                        level_2_superior=level_2_superior,
+                        level_3_superior=level_3_superior,
+                        level_4_superior=level_4_superior,
+                        level_5_superior=level_5_superior,
+                        level_6_superior=level_6_superior,
+                    )
+                else:
+                    existing_user.level_2_superior = uname_map.get(user_data['level_2_superior'])
+                    existing_user.level_3_superior = uname_map.get(user_data['level_3_superior'])
+                    existing_user.level_4_superior = uname_map.get(user_data['level_4_superior'])
+                    existing_user.level_5_superior = uname_map.get(user_data['level_5_superior'])
+                    existing_user.level_6_superior = uname_map.get(user_data['level_6_superior'])
+                    existing_user.level = user_data['level']
+                    existing_user.save()

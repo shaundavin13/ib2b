@@ -177,8 +177,24 @@ class ImportView(View):
             f = request.FILES['file']
         except KeyError:
             raise SuspiciousOperation(f'Unexpected payload: {request.FILES}')
-        data_manager.load_data(f)
-        # user_manager.load_users(f)
+
+        import time
+
+        a = time.time()
+        dfs = pd.read_excel(f, sheet_name=None)
+        b = time.time()
+        print(f'Time taken to read file: {b - a} seconds')
+
+
+        a = time.time()
+        data_manager.load_data(dfs)
+        b = time.time()
+        print(f'Time taken to parse file: {b - a} seconds')
+
+        a = time.time()
+        user_manager.load_users(dfs)
+        b = time.time()
+        print(f'Time taken to input users: {b - a} seconds')
 
         return render(request, template_name='core/import.html', context=dict(success=True))
 

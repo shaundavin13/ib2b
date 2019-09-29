@@ -32,10 +32,10 @@ class DataManager(object):
                 d = getattr(self, name)
                 pkl.dump(d, f)
 
-    def load_data(self, file):
-        self.open_tickets_df = self.load_open_tickets(file)
-        self.closed_tickets_df = self.load_closed_tickets(file)
-        self.links_df = self.load_links(file)
+    def load_data(self, dfs):
+        self.open_tickets_df = self.load_open_tickets(dfs)
+        self.closed_tickets_df = self.load_closed_tickets(dfs)
+        self.links_df = self.load_links(dfs)
         self._initialized = True
         self.save_pkl_data()
 
@@ -49,18 +49,18 @@ class DataManager(object):
         df[settings.COLUMN_NAMES['service_id']] = df[settings.COLUMN_NAMES['service_id']].astype('str').apply(
             replace_slash)
 
-    def load_open_tickets(self, f):
-        df = pd.read_excel(f, self.sheet_names['open_tickets_df'])
+    def load_open_tickets(self, dfs):
+        df = dfs[self.sheet_names['open_tickets_df']]
         self._clean_service_id(df)
         return df
 
-    def load_closed_tickets(self, f):
-        df = pd.read_excel(f, self.sheet_names['closed_tickets_df'])
+    def load_closed_tickets(self, dfs):
+        df = dfs[self.sheet_names['closed_tickets_df']]
         self._clean_service_id(df)
         return df
 
-    def load_links(self, f):
-        df = pd.read_excel(f, self.sheet_names['links_df'])
+    def load_links(self, dfs):
+        df = dfs[self.sheet_names['links_df']]
         self._clean_service_id(df)
         df['BA_NUMBER'] = df['BA_NUMBER'].apply(lambda x: str(x)).astype('str')
         return df
