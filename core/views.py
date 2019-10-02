@@ -3,14 +3,16 @@ from datetime import datetime, timedelta
 from urllib.parse import quote_plus
 import pandas as pd
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import PasswordChangeView
 from django.core.exceptions import SuspiciousOperation
 from django.core.paginator import Paginator
 from django.http import Http404
 from django.shortcuts import render, redirect
 # Create your views here.
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import TemplateView
@@ -197,6 +199,21 @@ class ImportView(View):
         user_manager.load_users(dfs)
         b = time.time()
         print(f'Time taken to input users: {b - a} seconds')
+        messages.success(self.request, 'Data has been successfully uploaded! Click the site icon on the top left to view the newly uploaded data.')
+        return render(request, template_name='core/import.html')
 
-        return render(request, template_name='core/import.html', context=dict(success=True))
 
+class SettingsView(View):
+
+    def get(self, request, *args):
+        pass
+
+    def post(self, request, *args):
+        pass
+
+class CustomPasswordChangeView(PasswordChangeView):
+    success_url = reverse_lazy('core:change-password')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Your password has been changed.')
+        return super().form_valid(form)

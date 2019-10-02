@@ -2,15 +2,7 @@
 {% block content %}
     <div class="ui container">
         <h2 class="ui header">Import data</h2>
-        {% if success %}
-            <div class="ui positive message">
-                <i class="close icon"></i>
-                <div class="header">
-                    Success!
-                </div>
-                Data has been successfully uploaded! Click the site icon on the top left to view the newly uploaded data.
-            </div>
-        {% endif %}
+        {% include 'core/__messages.html' %}
         <form action="" class="ui form" method="post" enctype="multipart/form-data">
             <div class="field input-container">
                 <div class="ui red large button import-button">

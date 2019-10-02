@@ -27,7 +27,7 @@
                     {% endif %}
 
                     <div class="item header-email">{{ request.user.username }}</div>
-                    <div class="item">Settings</div>
+                    <a href="{% url 'core:change-password' %}" class="item">Change password</a>
                     <a href="{% url 'core:logout' %}" class="item">Logout</a>
                 </div>
             </div>

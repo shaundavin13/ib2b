@@ -1,0 +1,31 @@
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="ui positive message">
+                    <i class="close icon"></i>
+                    <div class="header">
+                        Success!
+                    </div>
+                    {{ message }}
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <div class="ui warning message">
+                    <i class="close icon"></i>
+                    <div class="header">
+                        Warning!
+                    </div>
+                    {{ message }}
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="ui negative message">
+                    <i class="close icon"></i>
+                    <div class="header">
+                        Error!
+                    </div>
+                    {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
