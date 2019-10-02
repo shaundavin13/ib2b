@@ -63,4 +63,5 @@ class DataManager(object):
         df = dfs[self.sheet_names['links_df']]
         self._clean_service_id(df)
         df['BA_NUMBER'] = df['BA_NUMBER'].apply(lambda x: str(x)).astype('str')
+
         return df

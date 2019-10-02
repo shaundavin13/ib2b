@@ -51,7 +51,7 @@ class DashboardView(LoginRequiredMixin, View):
 
         queried = filter_results_by_user(request, queried)
 
-        p = Paginator(queried.values.tolist(), 50)
+        p = Paginator(queried.fillna('-').values.tolist(), 50)
 
         data = p.page(page_num)
 
@@ -109,7 +109,7 @@ class ClosedTicketView(LoginRequiredMixin, View):
         searchable_columns = [i[0] for i in dtypes if i[1] == 'object']
 
         context = dict(
-            data=queried.values.tolist(),
+            data=queried.fillna('-').values.tolist(),
             table_headings=queried.columns.tolist(),
             searchable_columns=searchable_columns,
             mttr=mttr,
@@ -141,8 +141,10 @@ class OpenTicketView(LoginRequiredMixin, View):
         dtypes = [(col, data_manager.open_tickets_df[col].dtype.name) for col in data_manager.open_tickets_df.columns]
         searchable_columns = [i[0] for i in dtypes if i[1] == 'object']
 
+
+
         context = dict(
-            data=queried.values.tolist(),
+            data=queried.fillna('-').values.tolist(),
             searchable_columns=searchable_columns,
             table_headings=queried.columns.tolist(),
             average_sr_duration=average_sr_duration,
