@@ -49,10 +49,12 @@ class UserManager(object):
                 uname = getattr(row, level_name)
                 if uname in created_names:
                     continue
+
+                if str(uname) == 'nan':
+                    continue
+
                 new_user_data.append(self._create_user_dict(row, level))
                 created_names.add(uname)
-
-
 
         updated_usernames = {u['username'] for u in new_user_data}
 
@@ -63,7 +65,6 @@ class UserManager(object):
 
         uname_map = {user.username: user for user in users}
 
-        users_to_bulk_create = []
 
         with transaction.atomic():
 
@@ -77,7 +78,7 @@ class UserManager(object):
                     level_5_superior = uname_map.get(user_data['level_5_superior'])
                     level_6_superior = uname_map.get(user_data['level_6_superior'])
 
-                    User.objects.create(
+                    user = User.objects.create(
                         username=user_data['username'],
                         level=user_data['level'],
                         level_2_superior=level_2_superior,
@@ -86,6 +87,9 @@ class UserManager(object):
                         level_5_superior=level_5_superior,
                         level_6_superior=level_6_superior,
                     )
+
+                    user.set_password(settings.DEFAULT_PASSWORD)
+                    user.save()
                 else:
                     existing_user.level_2_superior = uname_map.get(user_data['level_2_superior'])
                     existing_user.level_3_superior = uname_map.get(user_data['level_3_superior'])
