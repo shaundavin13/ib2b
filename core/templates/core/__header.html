@@ -1,0 +1,26 @@
+{% load static %}
+<header>
+    <div class="ui menu">
+        <div class="ui item">
+            <a href="/" class="ui tiny image">
+                <img src="{% static 'images/logo.png' %}" alt="">
+            </a>
+        </div>
+        <div class="right menu">
+            <a href="{{ sales_dashboard_url }}" class="item">Sales Dashboard</a>
+            {% if request.user.is_staff %}
+                <div class="ui dropdown item">
+                    <span class="text">Admin</span>
+                    <div class="menu">
+                        <a href="{% url 'core:admin-users' %}" class="item">Users</a>
+                        <a href="{% url 'core:admin-import' %}" class="item">Import Data</a>
+                    </div>
+                </div>
+
+            {% endif %}
+            <div class="item header-email">{{ request.user.username }}</div>
+            <a href="{% url 'core:change-password' %}" class="item">Change password</a>
+            <a href="{% url 'core:logout' %}" class="item">Logout</a>
+        </div>
+    </div>
+</header>

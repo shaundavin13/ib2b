@@ -162,3 +162,5 @@ django_heroku.settings(locals())
 #     DATABASES = {'default': dj_database_url.config()}
 
 DEFAULT_PASSWORD = os.getenv('DEFAULT_PASSWORD', '123')
+
+SALES_DASHBOARD_URL = 'https://www.google.com'
