@@ -171,10 +171,10 @@ class UsersView(View):
         return render(request, template_name='core/users.html', context=context)
 
 
-class ImportView(View):
+class ImportDataView(View):
 
     def get(self, request, *args, **kwargs):
-        return render(request, template_name='core/import.html')
+        return render(request, template_name='core/import_data.html')
 
     def post(self, request, *args, **kwargs):
         try:
@@ -182,25 +182,32 @@ class ImportView(View):
         except KeyError:
             raise SuspiciousOperation(f'Unexpected payload: {request.FILES}')
 
-        import time
-
-        a = time.time()
         dfs = pd.read_excel(f, sheet_name=None)
-        b = time.time()
-        print(f'Time taken to read file: {b - a} seconds')
 
-
-        a = time.time()
         data_manager.load_data(dfs)
-        b = time.time()
-        print(f'Time taken to parse file: {b - a} seconds')
 
-        a = time.time()
+        messages.success(self.request, 'Data has been successfully uploaded. Click the site icon on the top left to view the newly uploaded data.')
+        return render(request, template_name='core/import_data.html')
+
+
+class ImportUsersView(View):
+
+    def get(self, request, *args, **kwargs):
+        return render(request, template_name='core/import_users.html')
+
+    def post(self, request, *args, **kwargs):
+        try:
+            f = request.FILES['file']
+        except KeyError:
+            raise SuspiciousOperation(f'Unexpected payload: {request.FILES}')
+
+        dfs = pd.read_excel(f, sheet_name=None)
+
         user_manager.load_users(dfs)
-        b = time.time()
-        print(f'Time taken to input users: {b - a} seconds')
-        messages.success(self.request, 'Data has been successfully uploaded! Click the site icon on the top left to view the newly uploaded data.')
-        return render(request, template_name='core/import.html')
+
+        messages.success(self.request,
+                         'Users have been successfully imported. Go to Admin > Users to view updated users.')
+        return render(request, template_name='core/import_users.html')
 
 
 class SettingsView(View):

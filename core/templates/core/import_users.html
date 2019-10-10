@@ -1,0 +1,17 @@
+{% extends 'core/__core_base.html' %}
+{% block content %}
+    <div class="ui container">
+        <h2 class="ui header">Import Users</h2>
+        {% include 'core/__messages.html' %}
+        <form action="" class="ui form" method="post" enctype="multipart/form-data">
+            <div class="field input-container">
+                <div class="ui red large button import-button">
+                    Select File
+                    <input type="file" name="file" class="file-input-hidden">
+                </div>
+            </div>
+            {% csrf_token %}
+            <button class="ui medium button" type="submit">Upload</button>
+        </form>
+    </div>
+{% endblock %}
