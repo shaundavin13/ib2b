@@ -1,0 +1,2 @@
+class HistoryManager(object):
+    pass

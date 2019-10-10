@@ -25,3 +25,10 @@ class User(AbstractUser):
     level_4_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_4', null=True)
     level_5_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_5', null=True)
     level_6_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_6', null=True)
+
+class History(models.Model):
+
+    upload_time = models.DateTimeField()
+    payload_name = models.CharField(max_length=128)
+    uploader_nik = models.CharField(max_length=128)
+
