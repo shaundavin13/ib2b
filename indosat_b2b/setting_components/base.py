@@ -103,13 +103,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Jakarta'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 APPEND_SLASH = False
 
@@ -164,3 +164,5 @@ django_heroku.settings(locals())
 DEFAULT_PASSWORD = os.getenv('DEFAULT_PASSWORD', '123')
 
 SALES_DASHBOARD_URL = 'https://www.google.com'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

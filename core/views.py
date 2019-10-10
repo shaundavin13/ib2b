@@ -180,11 +180,11 @@ class ImportDataView(View):
         except KeyError:
             raise SuspiciousOperation(f'Unexpected payload: {request.FILES}')
 
+        now = datetime.now()
         dfs = pd.read_excel(f, sheet_name=None)
 
         data_manager.load_data(dfs)
-
-        HistoryManager.create_history('user', 'fake nik') # TODO: Change to real nik
+        HistoryManager.create_history('links_data', 'fake nik', f, now)  # TODO: Change to real nik
 
         messages.success(self.request, 'Data has been successfully uploaded. Click the site icon on the top left to view the newly uploaded data.')
         return render(request, template_name='core/import_data.html')
@@ -197,8 +197,7 @@ class ImportDataHistoryView(View):
         data = HistoryManager.get_data_upload_history()
 
         return render(request, template_name='core/import_data_history.html', context=dict(
-            searchable_columns=['Uploader NIK', 'Upload time', 'Data Type'],
-            table_headings=['Uploader NIK', 'Upload time', 'Data Type'],
+            table_headings=['Uploader NIK', 'Upload time', 'File Path in Server'],
             data=data,
         ))
 
@@ -218,7 +217,9 @@ class ImportUsersView(View):
 
         user_manager.load_users(dfs)
 
-        HistoryManager.create_history('user', 'fake nik')  # TODO: Change to real nik
+        now = datetime.now()
+
+        HistoryManager.create_history('user', 'fake nik', f, now)  # TODO: Change to real nik
 
         messages.success(self.request,
                          'Users have been successfully imported. Go to Admin > Users to view updated users.')
@@ -231,8 +232,7 @@ class ImportUsersHistoryView(View):
         data = HistoryManager.get_user_upload_history()
 
         return render(request, template_name='core/import_user_history.html', context=dict(
-            searchable_columns=['Uploader NIK', 'Upload time', 'Data Type'],
-            table_headings=['Uploader NIK', 'Upload time', 'Data Type'],
+            table_headings=['Uploader NIK', 'Upload time', 'File Path in Server'],
             data=data,
         ))
 
