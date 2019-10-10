@@ -166,6 +166,7 @@ class UsersView(View):
         context = dict(
             data=process_user_data(User.objects.all()),
             table_headings=['Username', 'Position', 'AVP', 'VP', 'SVP', 'Last Login', 'Is Staff'],
+            searchable_columns=['Username', 'Position', 'AVP', 'VP', 'SVP', 'Is Staff'],
         )
 
         return render(request, template_name='core/users.html', context=context)
