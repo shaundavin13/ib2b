@@ -6,6 +6,10 @@
     <h2 class="ui header">Dashboard</h2>
 {% endblock %}
 
+{% block search_filter %}
+    {% include 'core/_search_filter_section.html' with table_headings=table_headings %}
+{% endblock %}
+
 {% block metrics %}
     <div class="ui three stackable cards">
         {% include 'core/_metric.html' with title='Total MRC of All Links' content=total_mrc %}

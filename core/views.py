@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 
-from urllib.parse import quote_plus
 import pandas as pd
 from django.conf import settings
 from django.contrib import messages
@@ -9,19 +8,18 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import PasswordChangeView
 from django.core.exceptions import SuspiciousOperation
 from django.core.paginator import Paginator
-from django.http import Http404
 from django.shortcuts import render, redirect
 # Create your views here.
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import TemplateView
-from pip._vendor.distlib import metadata
 
 from core.DataManager import DataManager
 from core.UserManager import UserManager
 from core.helpers import filter_ticket_request, get_ticket_meta, query_request, is_expired_soon, as_rupiah, \
     process_user_data, filter_results_by_user
+from core.history_manager import HistoryManager
 from core.models import User
 
 data_manager = DataManager()
@@ -39,7 +37,7 @@ class DashboardView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
 
         if not data_manager._initialized:
-            return render(request, template_name='core/dashboard.html')  # todo: conditional in template for empty state
+            return render(request, template_name='core/dashboard.html')
 
         table_headings = data_manager.links_df.columns.tolist()
 
@@ -61,7 +59,6 @@ class DashboardView(LoginRequiredMixin, View):
 
         links_expired_soon = queried if queried.empty else queried[queried['TERMINATION_DATE'].apply(is_expired_soon)]
         mrc_expired_soon = as_rupiah(links_expired_soon['MRC_IDR'].sum())
-        # Todo: Must revisit user importing system - reporting lines not saved probably due to empty foreignkey
         num_expired_soon = len(links_expired_soon)
 
         service_id_index = table_headings.index('SERVICE_ID')
@@ -191,6 +188,19 @@ class ImportDataView(View):
         return render(request, template_name='core/import_data.html')
 
 
+class ImportDataHistoryView(View):
+
+    def get(self, request, *args, **kwargs):
+
+        data = HistoryManager.get_data_upload_history()
+
+        return render(request, template_name='core/import_data_history.html', context=dict(
+            searchable_columns=['Uploader NIK', 'Upload time', 'Data Type'],
+            table_headings=['Uploader NIK', 'Upload time', 'Data Type'],
+            data=data,
+        ))
+
+
 class ImportUsersView(View):
 
     def get(self, request, *args, **kwargs):
@@ -209,6 +219,18 @@ class ImportUsersView(View):
         messages.success(self.request,
                          'Users have been successfully imported. Go to Admin > Users to view updated users.')
         return render(request, template_name='core/import_users.html')
+
+
+class ImportUsersHistoryView(View):
+
+    def get(self, request, *args, **kwargs):
+        data = HistoryManager.get_user_upload_history()
+
+        return render(request, template_name='core/import_user_history.html', context=dict(
+            searchable_columns=['Uploader NIK', 'Upload time', 'Data Type'],
+            table_headings=['Uploader NIK', 'Upload time', 'Data Type'],
+            data=data,
+        ))
 
 
 class SettingsView(View):

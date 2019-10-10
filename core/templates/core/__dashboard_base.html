@@ -15,13 +15,14 @@
         {% block metadata %}
 
         {% endblock %}
-        {% block metrics %}
+        <div class="metrics">
+            {% block metrics %}
 
-        {% endblock %}
+            {% endblock %}
+        </div>
+
 
         {% block search_filter %}
-
-            {% include 'core/_search_filter_section.html' with table_headings=table_headings %}
 
         {% endblock %}
         {% block table %}
