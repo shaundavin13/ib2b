@@ -184,6 +184,8 @@ class ImportDataView(View):
 
         data_manager.load_data(dfs)
 
+        HistoryManager.create_history('user', 'fake nik') # TODO: Change to real nik
+
         messages.success(self.request, 'Data has been successfully uploaded. Click the site icon on the top left to view the newly uploaded data.')
         return render(request, template_name='core/import_data.html')
 
@@ -215,6 +217,8 @@ class ImportUsersView(View):
         dfs = pd.read_excel(f, sheet_name=None)
 
         user_manager.load_users(dfs)
+
+        HistoryManager.create_history('user', 'fake nik')  # TODO: Change to real nik
 
         messages.success(self.request,
                          'Users have been successfully imported. Go to Admin > Users to view updated users.')
