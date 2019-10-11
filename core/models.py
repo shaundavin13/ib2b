@@ -16,15 +16,16 @@ class User(AbstractUser):
     # REQUIRED_FIELDS = []
     level = models.IntegerField(null=True)
     objects = MyUserManager()
+    name = models.CharField(max_length=256)
 
     def get_salespeople(self):
         return getattr(self, f'subordinates_{self.level}').all() if self.level > 1 else []
 
-    level_2_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_2', null=True)
-    level_3_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_3', null=True)
-    level_4_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_4', null=True)
-    level_5_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_5', null=True)
-    level_6_superior = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='subordinates_6', null=True)
+    level_2_superior = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subordinates_2', null=True)
+    level_3_superior = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subordinates_3', null=True)
+    level_4_superior = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subordinates_4', null=True)
+    level_5_superior = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subordinates_5', null=True)
+    level_6_superior = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subordinates_6', null=True)
 
 def file_directory_path(instance, filename):
     return f'uploads/{instance.payload_name}/{instance.upload_time.strftime("%Y%m%d%H%M%S")}/{filename}'

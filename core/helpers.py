@@ -61,10 +61,11 @@ def transform_single_user(user):
 
     return [
         user.username,
+        user.name,
         position,
-        getattr(user.level_2_superior, 'username', 'N/A'),
-        getattr(user.level_3_superior, 'username', 'N/A'),
-        getattr(user.level_4_superior, 'username', 'N/A'),
+        getattr(user.level_2_superior, 'name', 'N/A'),
+        getattr(user.level_3_superior, 'name', 'N/A'),
+        getattr(user.level_4_superior, 'name', 'N/A'),
         user.last_login,
         'Yes' if user.is_staff else 'No',
     ]
