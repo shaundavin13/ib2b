@@ -60,8 +60,7 @@ class UserManager(object):
 
         users = User.objects.filter(is_staff=False).all()
         for user in users:
-            # if user.username not in updated_usernames:
-            if user.username != 'shaundavin13':
+            if user.username not in updated_usernames:
                 user.delete()
 
         uname_map = {user.username: user for user in users}
