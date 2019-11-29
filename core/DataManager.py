@@ -1,7 +1,6 @@
 import os
 import pickle as pkl
 
-import pandas as pd
 from django.conf import settings
 
 def replace_slash(s):

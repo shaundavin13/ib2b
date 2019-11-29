@@ -92,7 +92,7 @@ class ClosedTicketView(LoginRequiredMixin, View):
 
     def get(self, request, *args, service_id=None, **kwargs):
         if not data_manager._initialized:
-            return render(request, template_name='core/closed_ticket.html')  # todo: conditional in template for empty state
+            return render(request, template_name='core/closed_ticket.html')
         queried = filter_ticket_request(request, data_manager.closed_tickets_df, service_id)
         metadata = get_ticket_meta(data_manager.links_df, service_id)
 
@@ -126,7 +126,7 @@ class OpenTicketView(LoginRequiredMixin, View):
 
     def get(self, request, *args, service_id=None, **kwargs):
         if not data_manager._initialized:
-            return render(request, template_name='core/open_ticket.html') #todo: conditional in template for empty state
+            return render(request, template_name='core/open_ticket.html')
 
         queried = filter_ticket_request(request, data_manager.open_tickets_df, service_id)
         metadata = get_ticket_meta(data_manager.links_df, service_id)
@@ -184,7 +184,7 @@ class ImportDataView(View):
         dfs = pd.read_excel(f, sheet_name=None)
 
         data_manager.load_data(dfs)
-        HistoryManager.create_history('links_data', 'fake nik', f, now)  # TODO: Change to real nik
+        HistoryManager.create_history('links_data', request.user.username, f, now)
 
         messages.success(self.request, 'Data has been successfully uploaded. Click the site icon on the top left to view the newly uploaded data.')
         return render(request, template_name='core/import_data.html')
@@ -219,7 +219,7 @@ class ImportUsersView(View):
 
         now = datetime.now()
 
-        HistoryManager.create_history('user', 'fake nik', f, now)  # TODO: Change to real nik
+        HistoryManager.create_history('user', request.user.username, f, now)
 
         messages.success(self.request,
                          'Users have been successfully imported. Go to Admin > Users to view updated users.')

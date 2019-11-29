@@ -32,10 +32,6 @@ class UserManager(object):
             level_6_superior=getattr(row, nik_columns[5], None) if level < 6 else None,
         )
 
-
-
-
-
     def create_models(self, df):
         hierarchy = settings.HIERARCHY_LEVEL_NAMES
         nik_columns = settings.NIK_COLUMN_NAMES
