@@ -178,7 +178,8 @@ class ImportDataView(View):
         try:
             f = request.FILES['file']
         except KeyError:
-            raise SuspiciousOperation(f'Unexpected payload: {request.FILES}')
+            messages.error(request, 'You did not select a file. Please try again.')
+            return render(request, template_name='core/import_data.html')
 
         now = datetime.now()
         dfs = pd.read_excel(f, sheet_name=None)
@@ -211,7 +212,8 @@ class ImportUsersView(View):
         try:
             f = request.FILES['file']
         except KeyError:
-            raise SuspiciousOperation(f'Unexpected payload: {request.FILES}')
+            messages.error(request, 'You did not select a file. Please try again.')
+            return render(request, template_name='core/import_data.html')
 
         dfs = pd.read_excel(f, sheet_name=None)
 
